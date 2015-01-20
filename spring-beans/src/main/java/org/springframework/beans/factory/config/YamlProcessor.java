@@ -17,6 +17,7 @@
 package org.springframework.beans.factory.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collection;
@@ -146,17 +147,23 @@ public abstract class YamlProcessor {
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug("Loading from YAML: " + resource);
 			}
-			for (Object object : yaml.loadAll(resource.getInputStream())) {
-				if (object != null && process(asMap(object), callback)) {
-					count++;
-					if (this.resolutionMethod == ResolutionMethod.FIRST_FOUND) {
-						break;
+			InputStream stream = resource.getInputStream();
+			try {
+				for (Object object : yaml.loadAll(stream)) {
+					if (object != null && process(asMap(object), callback)) {
+						count++;
+						if (this.resolutionMethod == ResolutionMethod.FIRST_FOUND) {
+							break;
+						}
 					}
 				}
+				if (this.logger.isDebugEnabled()) {
+					this.logger.debug("Loaded " + count + " document" + (count > 1 ? "s" : "") +
+							" from YAML resource: " + resource);
+				}
 			}
-			if (this.logger.isDebugEnabled()) {
-				this.logger.debug("Loaded " + count + " document" + (count > 1 ? "s" : "") +
-						" from YAML resource: " + resource);
+			finally {
+				stream.close();
 			}
 		}
 		catch (IOException ex) {
@@ -205,7 +212,7 @@ public abstract class YamlProcessor {
 
 	private boolean process(Map<String, Object> map, MatchCallback callback) {
 		Properties properties = new Properties();
-		assignProperties(properties, map, null);
+		properties.putAll(getFlattenedMap(map));
 
 		if (this.documentMatchers.isEmpty()) {
 			if (this.logger.isDebugEnabled()) {
@@ -240,8 +247,23 @@ public abstract class YamlProcessor {
 		return false;
 	}
 
-	private void assignProperties(Properties properties, Map<String, Object> input, String path) {
-		for (Entry<String, Object> entry : input.entrySet()) {
+	/**
+	 * Return a flattened version of the given map, recursively following any nested Map
+	 * or Collection values. Entries from the resulting map retain the same order as the
+	 * source. When called with the Map from a {@link MatchCallback} the result will
+	 * contain the same values as the {@link MatchCallback} Properties.
+	 * @param source the source map
+	 * @return a flattened map
+	 * @since 4.1.3
+	 */
+	protected final Map<String, Object> getFlattenedMap(Map<String, Object> source) {
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		buildFlattenedMap(result, source, null);
+		return result;
+	}
+
+	private void buildFlattenedMap(Map<String, Object> result, Map<String, Object> source, String path) {
+		for (Entry<String, Object> entry : source.entrySet()) {
 			String key = entry.getKey();
 			if (StringUtils.hasText(path)) {
 				if (key.startsWith("[")) {
@@ -253,13 +275,13 @@ public abstract class YamlProcessor {
 			}
 			Object value = entry.getValue();
 			if (value instanceof String) {
-				properties.put(key, value);
+				result.put(key, value);
 			}
 			else if (value instanceof Map) {
 				// Need a compound key
 				@SuppressWarnings("unchecked")
 				Map<String, Object> map = (Map<String, Object>) value;
-				assignProperties(properties, map, key);
+				buildFlattenedMap(result, map, key);
 			}
 			else if (value instanceof Collection) {
 				// Need a compound key
@@ -267,12 +289,12 @@ public abstract class YamlProcessor {
 				Collection<Object> collection = (Collection<Object>) value;
 				int count = 0;
 				for (Object object : collection) {
-					assignProperties(properties,
+					buildFlattenedMap(result,
 							Collections.singletonMap("[" + (count++) + "]", object), key);
 				}
 			}
 			else {
-				properties.put(key, value == null ? "" : value);
+				result.put(key, value == null ? "" : value);
 			}
 		}
 	}

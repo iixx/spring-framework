@@ -111,8 +111,10 @@ public class DefaultListableBeanFactoryTests {
 
 	private static final Log factoryLog = LogFactory.getLog(DefaultListableBeanFactory.class);
 
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
 
 	@Test
 	public void testUnreferencedSingletonWasInstantiated() {
@@ -1199,7 +1201,7 @@ public class DefaultListableBeanFactoryTests {
 
 		RootBeanDefinition rbd = new RootBeanDefinition(PropertiesFactoryBean.class);
 		MutablePropertyValues pvs = new MutablePropertyValues();
-		pvs.add("locations", new String[]{"#{foo}"});
+		pvs.add("locations", new String[] {"#{foo}"});
 		rbd.setPropertyValues(pvs);
 		bf.registerBeanDefinition("myProperties", rbd);
 		Properties properties = (Properties) bf.getBean("myProperties");
@@ -2022,6 +2024,30 @@ public class DefaultListableBeanFactoryTests {
 	}
 
 	@Test
+	public void testConstructorDependencyWithClassResolution() {
+		DefaultListableBeanFactory lbf = new DefaultListableBeanFactory();
+		RootBeanDefinition bd = new RootBeanDefinition(ConstructorDependencyWithClassResolution.class);
+		bd.getConstructorArgumentValues().addGenericArgumentValue("java.lang.String");
+		lbf.registerBeanDefinition("test", bd);
+		lbf.preInstantiateSingletons();
+	}
+
+	@Test
+	public void testConstructorDependencyWithUnresolvableClass() {
+		DefaultListableBeanFactory lbf = new DefaultListableBeanFactory();
+		RootBeanDefinition bd = new RootBeanDefinition(ConstructorDependencyWithClassResolution.class);
+		bd.getConstructorArgumentValues().addGenericArgumentValue("java.lang.Strin");
+		lbf.registerBeanDefinition("test", bd);
+		try {
+			lbf.preInstantiateSingletons();
+			fail("Should have thrown UnsatisfiedDependencyException");
+		}
+		catch (UnsatisfiedDependencyException expected) {
+			assertTrue(expected.toString().contains("java.lang.Strin"));
+		}
+	}
+
+	@Test
 	public void testBeanDefinitionWithInterface() {
 		DefaultListableBeanFactory lbf = new DefaultListableBeanFactory();
 		lbf.registerBeanDefinition("test", new RootBeanDefinition(ITestBean.class));
@@ -2031,7 +2057,7 @@ public class DefaultListableBeanFactoryTests {
 		}
 		catch (BeanCreationException ex) {
 			assertEquals("test", ex.getBeanName());
-			assertTrue(ex.getMessage().toLowerCase().indexOf("interface") != -1);
+			assertTrue(ex.getMessage().toLowerCase().contains("interface"));
 		}
 	}
 
@@ -2045,7 +2071,7 @@ public class DefaultListableBeanFactoryTests {
 		}
 		catch (BeanCreationException ex) {
 			assertEquals("test", ex.getBeanName());
-			assertTrue(ex.getMessage().toLowerCase().indexOf("abstract") != -1);
+			assertTrue(ex.getMessage().toLowerCase().contains("abstract"));
 		}
 	}
 
@@ -2733,6 +2759,16 @@ public class DefaultListableBeanFactoryTests {
 		@Override
 		public boolean isSingleton() {
 			return true;
+		}
+	}
+
+
+	public static class ConstructorDependencyWithClassResolution {
+
+		public ConstructorDependencyWithClassResolution(Class<?> clazz) {
+		}
+
+		public ConstructorDependencyWithClassResolution() {
 		}
 	}
 

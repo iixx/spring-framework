@@ -141,7 +141,7 @@ public class TypeDescriptor implements Serializable {
 	 * <p>Returns primitive types as-is.
 	 * <p>See {@link #getObjectType()} for a variation of this operation that
 	 * resolves primitive types to their corresponding Object types if necessary.
-	 * @return the type, or {@code null}
+	 * @return the type, or {@code null} if it cannot be determined
 	 * @see #getObjectType()
 	 */
 	public Class<?> getType() {
@@ -425,39 +425,6 @@ public class TypeDescriptor implements Serializable {
 	 */
 	public TypeDescriptor getMapValueTypeDescriptor(Object mapValue) {
 		return narrow(mapValue, getMapValueTypeDescriptor());
-	}
-
-	/**
-	 * Returns the value of {@link TypeDescriptor#getType() getType()} for the
-	 * {@link #getElementTypeDescriptor() elementTypeDescriptor}.
-	 * @deprecated in Spring 3.1 in favor of {@link #getElementTypeDescriptor()}
-	 * @throws IllegalStateException if this type is not a {@code java.util.Collection} or array type
-	 */
-	@Deprecated
-	public Class<?> getElementType() {
-		return getType(getElementTypeDescriptor());
-	}
-
-	/**
-	 * Returns the value of {@link TypeDescriptor#getType() getType()} for the
-	 * {@link #getMapKeyTypeDescriptor() getMapKeyTypeDescriptor}.
-	 * @deprecated in Spring 3.1 in favor of {@link #getMapKeyTypeDescriptor()}
-	 * @throws IllegalStateException if this type is not a {@code java.util.Map}
-	 */
-	@Deprecated
-	public Class<?> getMapKeyType() {
-		return getType(getMapKeyTypeDescriptor());
-	}
-
-	/**
-	 * Returns the value of {@link TypeDescriptor#getType() getType()} for the
-	 * {@link #getMapValueTypeDescriptor() getMapValueTypeDescriptor}.
-	 * @deprecated in Spring 3.1 in favor of {@link #getMapValueTypeDescriptor()}
-	 * @throws IllegalStateException if this type is not a {@code java.util.Map}
-	 */
-	@Deprecated
-	public Class<?> getMapValueType() {
-		return getType(getMapValueTypeDescriptor());
 	}
 
 	private Class<?> getType(TypeDescriptor typeDescriptor) {

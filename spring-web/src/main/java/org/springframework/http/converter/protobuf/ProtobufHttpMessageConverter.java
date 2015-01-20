@@ -86,7 +86,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
 	 */
 	public ProtobufHttpMessageConverter(ExtensionRegistryInitializer registryInitializer) {
 		super(PROTOBUF, MediaType.TEXT_PLAIN, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON);
-		if (this.extensionRegistry != null) {
+		if (registryInitializer != null) {
 			registryInitializer.initializeExtensionRegistry(this.extensionRegistry);
 		}
 	}
@@ -166,16 +166,24 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
 		Charset charset = getCharset(contentType);
 
 		if (MediaType.TEXT_HTML.isCompatibleWith(contentType)) {
-			HtmlFormat.print(message, new OutputStreamWriter(outputMessage.getBody(), charset));
+			final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputMessage.getBody(), charset);
+			HtmlFormat.print(message, outputStreamWriter);
+			outputStreamWriter.flush();
 		}
 		else if (MediaType.APPLICATION_JSON.isCompatibleWith(contentType)) {
-			JsonFormat.print(message, new OutputStreamWriter(outputMessage.getBody(), charset));
+			final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputMessage.getBody(), charset);
+			JsonFormat.print(message, outputStreamWriter);
+			outputStreamWriter.flush();
 		}
 		else if (MediaType.TEXT_PLAIN.isCompatibleWith(contentType)) {
-			TextFormat.print(message, new OutputStreamWriter(outputMessage.getBody(), charset));
+			final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputMessage.getBody(), charset);
+			TextFormat.print(message, outputStreamWriter);
+			outputStreamWriter.flush();
 		}
 		else if (MediaType.APPLICATION_XML.isCompatibleWith(contentType)) {
-			XmlFormat.print(message, new OutputStreamWriter(outputMessage.getBody(), charset));
+			final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputMessage.getBody(), charset);
+			XmlFormat.print(message, outputStreamWriter);
+			outputStreamWriter.flush();
 		}
 		else if (PROTOBUF.isCompatibleWith(contentType)) {
 			setProtoHeader(outputMessage, message);

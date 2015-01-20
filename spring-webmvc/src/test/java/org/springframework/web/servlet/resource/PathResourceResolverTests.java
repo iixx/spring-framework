@@ -15,19 +15,18 @@
  */
 package org.springframework.web.servlet.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.mock.web.test.MockServletContext;
+import org.springframework.web.context.support.ServletContextResource;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for
@@ -38,13 +37,8 @@ import org.springframework.core.io.UrlResource;
  */
 public class PathResourceResolverTests {
 
-	private PathResourceResolver resolver;
+	private final PathResourceResolver resolver = new PathResourceResolver();
 
-
-	@Before
-	public void setup() {
-		this.resolver = new PathResourceResolver();
-	}
 
 	@Test
 	public void resolveFromClasspath() throws IOException {
@@ -81,6 +75,14 @@ public class PathResourceResolverTests {
 		testCheckResource(location, "url:" + secretPath);
 	}
 
+	private void testCheckResource(Resource location, String requestPath) throws IOException {
+		Resource actual = this.resolver.resolveResource(null, requestPath, Arrays.asList(location), null);
+		if (!location.createRelative(requestPath).exists() && !requestPath.contains(":")) {
+			fail(requestPath + " doesn't actually exist as a relative path");
+		}
+		assertNull(actual);
+	}
+
 	@Test
 	public void checkResourceWithAllowedLocations() {
 		this.resolver.setAllowedLocations(
@@ -93,10 +95,17 @@ public class PathResourceResolverTests {
 		assertEquals("../testalternatepath/bar.css", actual);
 	}
 
-	private void testCheckResource(Resource location, String requestPath) throws IOException {
-		Resource actual = this.resolver.resolveResource(null, requestPath, Arrays.asList(location), null);
-		assertTrue(location.createRelative(requestPath).exists());
-		assertNull(actual);
+	// SPR-12432
+	@Test
+	public void checkServletContextResource() throws Exception {
+		Resource classpathLocation = new ClassPathResource("test/", PathResourceResolver.class);
+		MockServletContext context = new MockServletContext();
+
+		ServletContextResource servletContextLocation = new ServletContextResource(context, "/webjars/");
+		ServletContextResource resource = new ServletContextResource(context, "/webjars/webjar-foo/1.0/foo.js");
+
+		assertFalse(this.resolver.checkResource(resource, classpathLocation));
+		assertTrue(this.resolver.checkResource(resource, servletContextLocation));
 	}
 
 }

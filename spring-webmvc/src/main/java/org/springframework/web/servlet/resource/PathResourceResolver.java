@@ -18,13 +18,14 @@ package org.springframework.web.servlet.resource;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.web.context.support.ServletContextResource;
 
 /**
  * A simple {@code ResourceResolver} that tries to find a resource under the given
@@ -121,24 +122,21 @@ public class PathResourceResolver extends AbstractResourceResolver {
 			if (checkResource(resource, location)) {
 				return resource;
 			}
-			else {
-				if (logger.isTraceEnabled()) {
-					logger.trace("resourcePath=\"" + resourcePath + "\" was successfully resolved " +
-							"but resource=\"" +	resource.getURL() + "\" is neither under the " +
-							"current location=\"" + location.getURL() + "\" nor under any of the " +
-							"allowed locations=" + getAllowedLocations());
-				}
+			else if (logger.isTraceEnabled()) {
+				logger.trace("Resource path=\"" + resourcePath + "\" was successfully resolved " +
+						"but resource=\"" +	resource.getURL() + "\" is neither under the " +
+						"current location=\"" + location.getURL() + "\" nor under any of the " +
+						"allowed locations=" + Arrays.asList(getAllowedLocations()));
 			}
 		}
 		return null;
 	}
 
 	/**
-	 * Perform additional checks on a resolved resource beyond checking whether
-	 * the resources exists and is readable. The default implementation also
-	 * verifies the resource is either under the location relative to which it
-	 * was found or is under one of the {@link #setAllowedLocations allowed
-	 * locations}.
+	 * Perform additional checks on a resolved resource beyond checking whether the
+	 * resources exists and is readable. The default implementation also verifies
+	 * the resource is either under the location relative to which it was found or
+	 * is under one of the {@link #setAllowedLocations allowed locations}.
 	 * @param resource the resource to check
 	 * @param location the location relative to which the resource was found
 	 * @return "true" if resource is in a valid location, "false" otherwise.
@@ -164,13 +162,17 @@ public class PathResourceResolver extends AbstractResourceResolver {
 		}
 		String resourcePath;
 		String locationPath;
-		if (resource instanceof ClassPathResource) {
+		if (resource instanceof UrlResource) {
+			resourcePath = resource.getURL().toExternalForm();
+			locationPath = location.getURL().toExternalForm();
+		}
+		else if (resource instanceof ClassPathResource) {
 			resourcePath = ((ClassPathResource) resource).getPath();
 			locationPath = ((ClassPathResource) location).getPath();
 		}
-		else if (resource instanceof UrlResource) {
-			resourcePath = resource.getURL().toExternalForm();
-			locationPath = location.getURL().toExternalForm();
+		else if (resource instanceof ServletContextResource) {
+			resourcePath = ((ServletContextResource) resource).getPath();
+			locationPath = ((ServletContextResource) location).getPath();
 		}
 		else {
 			resourcePath = resource.getURL().getPath();
@@ -181,7 +183,7 @@ public class PathResourceResolver extends AbstractResourceResolver {
 			return false;
 		}
 		if (resourcePath.contains("%")) {
-			// Use URLDecoder (vs UriUtils) to preserve potentially decoded UTF-8 chars
+			// Use URLDecoder (vs UriUtils) to preserve potentially decoded UTF-8 chars...
 			if (URLDecoder.decode(resourcePath, "UTF-8").contains("../")) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Resolved resource path contains \"../\" after decoding: " + resourcePath);

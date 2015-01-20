@@ -31,16 +31,19 @@ import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.cfg.HandlerInstantiator;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.FatalBeanException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -93,6 +96,10 @@ public class Jackson2ObjectMapperBuilder {
 	private boolean findModulesViaServiceLoader;
 
 	private ClassLoader moduleClassLoader = getClass().getClassLoader();
+
+	private HandlerInstantiator handlerInstantiator;
+
+	private ApplicationContext applicationContext;
 
 
 	/**
@@ -379,6 +386,27 @@ public class Jackson2ObjectMapperBuilder {
 		return this;
 	}
 
+	/**
+	 * Customize the construction of Jackson handlers ({@link JsonSerializer}, {@link JsonDeserializer},
+	 * {@link KeyDeserializer}, {@code TypeResolverBuilder} and {@code TypeIdResolver}).
+	 * @since 4.1.3
+	 * @see Jackson2ObjectMapperBuilder#applicationContext(ApplicationContext)
+	 */
+	public Jackson2ObjectMapperBuilder handlerInstantiator(HandlerInstantiator handlerInstantiator) {
+		this.handlerInstantiator = handlerInstantiator;
+		return this;
+	}
+
+	/**
+	 * Set the Spring {@link ApplicationContext} in order to autowire Jackson handlers ({@link JsonSerializer},
+	 * {@link JsonDeserializer}, {@link KeyDeserializer}, {@code TypeResolverBuilder} and {@code TypeIdResolver}).
+	 * @since 4.1.3
+	 * @see SpringHandlerInstantiator
+	 */
+	public Jackson2ObjectMapperBuilder applicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+		return this;
+	}
 
 	/**
 	 * Build a new {@link ObjectMapper} instance.
@@ -412,6 +440,7 @@ public class Jackson2ObjectMapperBuilder {
 	 * settings. This can be applied to any number of {@code ObjectMappers}.
 	 * @param objectMapper the ObjectMapper to configure
 	 */
+	@SuppressWarnings("deprecation")
 	public void configure(ObjectMapper objectMapper) {
 		Assert.notNull(objectMapper, "ObjectMapper must not be null");
 
@@ -434,12 +463,7 @@ public class Jackson2ObjectMapperBuilder {
 			objectMapper.registerModule(module);
 		}
 
-		if (!this.features.containsKey(MapperFeature.DEFAULT_VIEW_INCLUSION)) {
-			configureFeature(objectMapper, MapperFeature.DEFAULT_VIEW_INCLUSION, false);
-		}
-		if (!this.features.containsKey(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)) {
-			configureFeature(objectMapper, DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		}
+		customizeDefaultFeatures(objectMapper);
 		for (Object feature : this.features.keySet()) {
 			configureFeature(objectMapper, feature, this.features.get(feature));
 		}
@@ -471,7 +495,26 @@ public class Jackson2ObjectMapperBuilder {
 			objectMapper.setPropertyNamingStrategy(this.propertyNamingStrategy);
 		}
 		for (Class<?> target : this.mixIns.keySet()) {
+			// Deprecated as of Jackson 2.5, but just in favor of a fluent variant.
 			objectMapper.addMixInAnnotations(target, this.mixIns.get(target));
+		}
+		if (this.handlerInstantiator != null) {
+			objectMapper.setHandlerInstantiator(this.handlerInstantiator);
+		}
+		else if (this.applicationContext != null) {
+			objectMapper.setHandlerInstantiator(
+					new SpringHandlerInstantiator(this.applicationContext.getAutowireCapableBeanFactory()));
+		}
+	}
+
+	// Any change to this method should be also applied to spring-jms and spring-messaging
+	// MappingJackson2MessageConverter default constructors
+	private void customizeDefaultFeatures(ObjectMapper objectMapper) {
+		if (!this.features.containsKey(MapperFeature.DEFAULT_VIEW_INCLUSION)) {
+			configureFeature(objectMapper, MapperFeature.DEFAULT_VIEW_INCLUSION, false);
+		}
+		if (!this.features.containsKey(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)) {
+			configureFeature(objectMapper, DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
 	}
 

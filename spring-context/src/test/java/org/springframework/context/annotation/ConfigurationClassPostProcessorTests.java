@@ -38,6 +38,7 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.ChildBeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.componentscan.simple.SimpleComponent;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DescriptiveResource;
@@ -466,6 +467,18 @@ public class ConfigurationClassPostProcessorTests {
 		catch (BeanCreationException ex) {
 			assertTrue(ex.getMessage().contains("Circular reference"));
 		}
+	}
+
+	@Test
+	public void testPrototypeArgumentsThroughBeanMethodCall() {
+		ApplicationContext ctx = new AnnotationConfigApplicationContext(BeanArgumentConfigWithPrototype.class);
+		ctx.getBean(FooFactory.class).createFoo(new BarArgument());
+	}
+
+	@Test
+	public void testSingletonArgumentsThroughBeanMethodCall() {
+		ApplicationContext ctx = new AnnotationConfigApplicationContext(BeanArgumentConfigWithSingleton.class);
+		ctx.getBean(FooFactory.class).createFoo(new BarArgument());
 	}
 
 
@@ -923,6 +936,59 @@ public class ConfigurationClassPostProcessorTests {
 	}
 
 	public static class Z {
+	}
+
+	@Configuration
+	static class BeanArgumentConfigWithPrototype {
+
+		@Bean
+		@Scope("prototype")
+		public DependingFoo foo(final BarArgument bar) {
+			return new DependingFoo(bar);
+		}
+
+		@Bean
+		public FooFactory fooFactory() {
+			return new FooFactory() {
+				@Override
+				public DependingFoo createFoo(final BarArgument bar) {
+					return foo(bar);
+				}
+			};
+		}
+	}
+
+	@Configuration
+	static class BeanArgumentConfigWithSingleton {
+
+		@Bean @Lazy
+		public DependingFoo foo(final BarArgument bar) {
+			return new DependingFoo(bar);
+		}
+
+		@Bean
+		public FooFactory fooFactory() {
+			return new FooFactory() {
+				@Override
+				public DependingFoo createFoo(final BarArgument bar) {
+					return foo(bar);
+				}
+			};
+		}
+	}
+
+	static class BarArgument {
+	}
+
+	static class DependingFoo {
+
+		DependingFoo(BarArgument bar) {
+		}
+	}
+
+	static abstract class FooFactory {
+
+		abstract DependingFoo createFoo(BarArgument bar);
 	}
 
 }

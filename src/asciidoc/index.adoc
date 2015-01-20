@@ -37,28 +37,30 @@ list]. Questions on the Framework itself should be asked on StackOverflow
 
 
 [[overview-getting-started-with-spring]]
-== Getting Started With Spring
+== Getting Started with Spring
 This reference guide provides detailed information about the Spring Framework.
 It provides comprehensive documentation for all features, as well as some background
 about the underlying concepts (such as __"Dependency Injection"__) that Spring has
 embraced.
 
-If you are just getting started with Spring, you may want to begin with the lighter
-https://spring.io/guides["Getting Started"] guides that are available from
-https://spring.io. As well as being easier to digest, these guide are very
-__task focused__. They also cover other projects from the Spring portfolio that you might
- want to consider when solving a particular problem.
+If you are just getting started with Spring, you may want to begin using the Spring Framework
+by creating a http://projects.spring.io/spring-boot/[Spring Boot] based application.
+Spring Boot provides a quick (and opinionated) way to create a production-ready Spring based
+application. It is based on the Spring Framework, favors convention over configuration, and is
+designed to get you up and running as quickly as possible.
 
+You can use http://start.spring.io[start.spring.io] to generate a basic project or follow
+one of the https://spring.io/guides["Getting Started" guides] like the
 https://spring.io/guides/gs/rest-service/[Getting Started Building a RESTful Web Service]
-would be an excellent first choice to get your feet wet.
-
-
+one. As well as being easier to digest, these guides are very __task focused__, and most of
+them are based on Spring Boot. They also cover other projects from the Spring portfolio
+that you might want to consider when solving a particular problem.
 
 
 
 [[overview]]
-== Introduction to Spring Framework
-Spring Framework is a Java platform that provides comprehensive infrastructure support
+== Introduction to the Spring Framework
+The Spring Framework is a Java platform that provides comprehensive infrastructure support
 for developing Java applications. Spring handles the infrastructure so you can focus on
 your application.
 
@@ -66,7 +68,7 @@ Spring enables you to build applications from "plain old Java objects" (POJOs) a
 apply enterprise services non-invasively to POJOs. This capability applies to the Java
 SE programming model and to full and partial Java EE.
 
-Examples of how you, as an application developer, can use the Spring platform advantage:
+Examples of how you, as an application developer, can benefit from the Spring platform:
 
 * Make a Java method execute in a database transaction without having to deal with
   transaction APIs.
@@ -80,29 +82,17 @@ Examples of how you, as an application developer, can use the Spring platform ad
 [[overview-dependency-injection]]
 === Dependency Injection and Inversion of Control
 
-[[background-ioc]]
-.Background
-****
-"__The question is, what aspect of control are [they] inverting?__" Martin Fowler posed
-this question about Inversion of Control (IoC) on his site in 2004. Fowler suggested
-renaming the principle to make it more self-explanatory and came up with __Dependency
-Injection__.
-
-For insight into IoC and DI, refer to Fowler's article at
-http://martinfowler.com/articles/injection.html[http://martinfowler.com/articles/injection.html].
-****
-
-Java applications -- a loose term that runs the gamut from constrained applets to n-tier
-server-side enterprise applications -- typically consist of objects that collaborate to
-form the application proper. Thus the objects in an application have __dependencies__ on
-each other.
+A Java application -- a loose term that runs the gamut from constrained, embedded
+applications to n-tier, server-side enterprise applications -- typically consists of
+objects that collaborate to form the application proper. Thus the objects in an
+application have __dependencies__ on each other.
 
 Although the Java platform provides a wealth of application development functionality,
 it lacks the means to organize the basic building blocks into a coherent whole, leaving
-that task to architects and developers. True, you can use design patterns such
+that task to architects and developers. Although you can use design patterns such
 as __Factory__, __Abstract Factory__, __Builder__, __Decorator__, and __Service Locator__
-to compose the various classes and object instances that make up an application.
-However, these patterns are simply that: best practices given a name, with a description
+to compose the various classes and object instances that make up an application,
+these patterns are simply that: best practices given a name, with a description
 of what the pattern does, where to apply it, the problems it addresses, and so forth.
 Patterns are formalized best practices that __you must implement yourself__ in your
 application.
@@ -113,6 +103,16 @@ application ready for use. The Spring Framework codifies formalized design patte
 first-class objects that you can integrate into your own application(s). Numerous
 organizations and institutions use the Spring Framework in this manner to engineer
 robust, __maintainable__ applications.
+
+[[background-ioc]]
+.Background
+****
+"__The question is, what aspect of control are [they] inverting?__" Martin Fowler posed
+this question about Inversion of Control (IoC)
+http://martinfowler.com/articles/injection.html[on his site] in 2004. Fowler suggested
+renaming the principle to make it more self-explanatory and came up with __Dependency
+Injection__.
+****
 
 
 
@@ -127,15 +127,15 @@ Programming), Instrumentation, Messaging, and Test, as shown in the following di
 image::images/spring-overview.png[width=400]
 
 The following sections list the available modules for each feature along with their
-artifact name and the topics they cover. Artifact names correlate to _artifact IDs_ used
+artifact names and the topics they cover. Artifact names correlate to _artifact IDs_ used
 in <<dependency-management,Dependency Management tools>>.
 
 
 [[overview-core-container]]
 ==== Core Container
 The <<beans-introduction,__Core Container__>> consists of the `spring-core`,
-`spring-beans`, `spring-context`, and `spring-expression` (Spring Expression Language)
-modules.
+`spring-beans`, `spring-context`, `spring-context-support`, and `spring-expression`
+(Spring Expression Language) modules.
 
 The `spring-core` and `spring-beans` modules <<beans-introduction,provide the fundamental
 parts of the framework>>, including the IoC and Dependency Injection features. The
@@ -151,6 +151,11 @@ internationalization (using, for example, resource bundles), event propagation, 
 loading, and the transparent creation of contexts by, for example, a Servlet container.
 The Context module also supports Java EE features such as EJB, JMX, and basic remoting.
 The `ApplicationContext` interface is the focal point of the Context module.
+`spring-context-support` provides support for integrating common third-party libraries
+into a Spring application context for caching (EhCache, Guava, JCache), mailing
+(JavaMail), scheduling (CommonJ, Quartz) and template engines (FreeMarker, JasperReports,
+Velocity).
+
 
 The `spring-expression` module provides a powerful <<expressions,__Expression
 Language__>> for querying and manipulating an object graph at runtime. It is an extension
@@ -174,7 +179,8 @@ attributes.
 The separate `spring-aspects` module provides integration with AspectJ.
 
 The `spring-instrument` module provides class instrumentation support and classloader
-implementations to be used in certain application servers.
+implementations to be used in certain application servers. The `spring-instrument-tomcat`
+module contains Spring's instrumentation agent for Tomcat.
 
 
 [[overview-messaging]]
@@ -221,13 +227,14 @@ The __Web__ layer consists of the `spring-web`, `spring-webmvc`, `spring-websock
 
 The `spring-web` module provides basic web-oriented integration features such as
 multipart file upload functionality and the initialization of the IoC container using
-Servlet listeners and a web-oriented application context. It also contains the
-web-related parts of Spring's remoting support.
+Servlet listeners and a web-oriented application context. It also contains an HTTP client
+and the web-related parts of Spring's remoting support.
 
 The `spring-webmvc` module (also known as the __Web-Servlet__ module) contains Spring's
-model-view-controller (<<mvc-introduction,__MVC__>>) implementation for web applications.
-Spring's MVC framework provides a clean separation between domain model code and web
-forms and integrates with all of the other features of the Spring Framework.
+model-view-controller (<<mvc-introduction,__MVC__>>) and REST Web Services implementation
+for web applications. Spring's MVC framework provides a clean separation between domain
+model code and web forms and integrates with all of the other features of the Spring
+Framework.
 
 The `spring-webmvc-portlet` module (also known as the __Web-Portlet__ module) provides
 the MVC implementation to be used in a Portlet environment and mirrors the functionality
@@ -248,8 +255,9 @@ code in isolation.
 [[overview-usagescenarios]]
 === Usage scenarios
 The building blocks described previously make Spring a logical choice in many scenarios,
-from applets to full-fledged enterprise applications that use Spring's transaction
-management functionality and web framework integration.
+from embedded applications that run on resource-constrained devices to full-fledged
+enterprise applications that use Spring's transaction management functionality and web
+framework integration.
 
 .Typical full-fledged Spring web application
 image::images/overview-full.png[width=400]
@@ -334,8 +342,97 @@ Each release of the Spring Framework will publish artifacts to the following pla
 
 So the first thing you need to decide is how to manage your dependencies: we generally
 recommend the use of an automated system like Maven, Gradle or Ivy, but you can also do
-it manually by downloading all the jars yourself. We provide detailed instructions later
-in this chapter.
+it manually by downloading all the jars yourself.
+
+You will find bellow the list of Spring artifacts. For a more complete description of each
+modules, see <<overview-modules>>.
+
+
+.Spring Framework Artifacts
+|===
+|GroupId |ArtifactId |Description
+
+|org.springframework
+|spring-aop
+|Proxy-based AOP support
+
+|org.springframework
+|spring-aspects
+|AspectJ based aspects
+
+|org.springframework
+|spring-beans
+|Beans support, including Groovy
+
+|org.springframework
+|spring-context
+|Application context runtime, including scheduling and remoting abstractions
+
+|org.springframework
+|spring-context-support
+|Support classes for integrating common third-party libraries into a Spring application context
+
+|org.springframework
+|spring-core
+|Core utilities, used by many other Spring modules
+
+|org.springframework
+|spring-expression
+|Spring Expression Language (SpEL)
+
+|org.springframework
+|spring-instrument
+|Instrumentation agent for JVM bootstrapping
+
+|org.springframework
+|spring-instrument-tomcat
+|Instrumentation agent for Tomcat
+
+|org.springframework
+|spring-jdbc
+|JDBC support package, including DataSource setup and JDBC access support
+
+|org.springframework
+|spring-jms
+|JMS support package, including helper classes to send and receive JMS messages
+
+|org.springframework
+|spring-messaging
+|Support for messaging architectures and protocols
+
+|org.springframework
+|spring-orm
+|Object/Relational Mapping, including JPA and Hibernate support
+
+|org.springframework
+|spring-oxm
+|Object/XML Mapping
+
+|org.springframework
+|spring-test
+|Support for unit testing and integration testing Spring components
+
+|org.springframework
+|spring-tx
+|Transaction infrastructure, including DAO support and JCA integration
+
+|org.springframework
+|spring-web
+|Web support packages, including client and web remoting
+
+|org.springframework
+|spring-webmvc
+|REST Web Services and model-view-controller implementation for web applications
+
+|org.springframework
+|spring-webmvc-portlet
+|MVC implementation to be used in a Portlet environment
+
+|org.springframework
+|spring-websocket
+|WebSocket and SockJS implementations, including STOMP support
+|===
+
 
 
 [[overview-spring-dependencies]]
@@ -863,9 +960,9 @@ Spring Framework 4.0. The same applies to Hibernate Validator 5.0 as a Bean Vali
 
 [[groovy-bean-definition-dsl]]
 === Groovy Bean Definition DSL
-With Spring Framework 4.0 it is now possible to define external bean configuration using
-a Groovy DSL. This is similar in concept to using XML bean definitions, but allows for
-a more concise syntax. Using Groovy also allows you to easily embed bean definitions
+Beginning with Spring Framework 4.0, it is possible to define external bean configuration
+using a Groovy DSL. This is similar in concept to using XML bean definitions but allows
+for a more concise syntax. Using Groovy also allows you to easily embed bean definitions
 directly in your bootstrap code. For example:
 
 [source,groovy,indent=0]
@@ -4045,7 +4142,8 @@ unnecessarily couples the code to Spring. Alternatively, use
 the <<beans-postconstruct-and-predestroy-annotations, `@PostConstruct`>> annotation or
 specify a POJO initialization method. In the case of XML-based configuration metadata,
 you use the `init-method` attribute to specify the name of the method that has a void
-no-argument signature. For example, the following definition:
+no-argument signature. With Java config  you use the `initMethod` attribute of `@Bean`,
+see <<beans-java-lifecycle-callbacks>>. For example, the following:
 
 [source,xml,indent=0]
 [subs="verbatim,quotes"]
@@ -4104,8 +4202,9 @@ It is recommended that you do not use the `DisposableBean` callback interface be
 unnecessarily couples the code to Spring. Alternatively, use
 the <<beans-postconstruct-and-predestroy-annotations, `@PreDestroy`>> annotation or
 specify a generic method that is supported by bean definitions. With XML-based
-configuration metadata, you use the `destroy-method` attribute on the `<bean/>`. For
-example, the following definition:
+configuration metadata, you use the `destroy-method` attribute on the `<bean/>`. With
+Java config  you use the `destroyMethod` attribute of `@Bean`, see
+<<beans-java-lifecycle-callbacks>>. For example, the following definition:
 
 [source,xml,indent=0]
 [subs="verbatim,quotes"]
@@ -4147,6 +4246,16 @@ is exactly the same as:
 
 but does not couple the code to Spring.
 
+[TIP]
+====
+The `destroy-method` attribute of a `<bean>` element can be assigned a special
+`(inferred)` value which instructs Spring to automatically detect a public `close` or
+`shutdown` method on the specific bean class. This special `(inferred)` value can also be
+set on the `default-destroy-method` attribute of a `<beans>` element to apply this
+behavior to an entire set of beans (see
+<<beans-factory-lifecycle-default-init-destroy-methods>>). Note that this is the
+default behavior with Java config.
+====
 
 [[beans-factory-lifecycle-default-init-destroy-methods]]
 ===== Default initialization and destroy methods
@@ -4598,13 +4707,13 @@ A child bean definition uses the bean class from the parent definition if none i
 specified, but can also override it. In the latter case, the child bean class must be
 compatible with the parent, that is, it must accept the parent's property values.
 
-A child bean definition inherits constructor argument values, property values, and
-method overrides from the parent, with the option to add new values. Any initialization
+A child bean definition inherits scope, constructor argument values, property values, and
+method overrides from the parent, with the option to add new values. Any scope, initialization
 method, destroy method, and/or `static` factory method settings that you specify will
 override the corresponding parent settings.
 
 The remaining settings are __always__ taken from the child definition: __depends on__,
-__autowire mode__, __dependency check__, __singleton__, __scope__, __lazy init__.
+__autowire mode__, __dependency check__, __singleton__, __lazy init__.
 
 The preceding example explicitly marks the parent bean definition as abstract by using
 the `abstract` attribute. If the parent definition does not specify a class, explicitly
@@ -6156,7 +6265,7 @@ are eligible for such autodetection:
 To autodetect these classes and register the corresponding beans, you need to add
 `@ComponentScan` to your `@Configuration` class, where the `basePackages` attribute
 is a common parent package for the two classes. (Alternatively, you can specify a
-comma-separated list that includes the parent package of each class.)
+comma/semicolon/space-separated list that includes the parent package of each class.)
 
 [source,java,indent=0]
 [subs="verbatim,quotes"]
@@ -7153,6 +7262,15 @@ on the `bean` element:
 	}
 ----
 
+[NOTE]
+====
+By default, beans defined using Java config that have a public `close` or `shutdown`
+method are automatically enlisted with a destruction callback. If you have a public
+`close` or `shutdown` method and you do not wish for it to be called when the container
+shuts down, simply add `@Bean(destroyMethod="")` to your bean definition to disable the
+default `(inferred)` mode.
+====
+
 Of course, in the case of `Foo` above, it would be equally as valid to call the `init()`
 method directly during construction:
 
@@ -7165,7 +7283,7 @@ method directly during construction:
 		public Foo foo() {
 			Foo foo = new Foo();
 			foo.init();
-		return foo;
+		    return foo;
 		}
 
 		// ...
@@ -7298,7 +7416,7 @@ annotation can be used:
 	public class AppConfig {
 
 		@Bean
-		**@Desciption("Provides a basic example of a bean")**
+		**@Description("Provides a basic example of a bean")**
 		public Foo foo() {
 			return new Foo();
 		}
@@ -8963,15 +9081,15 @@ directly through a classic singleton lookup.
 Use an `ApplicationContext` unless you have a good reason for not doing so.
 
 Because the `ApplicationContext` includes all functionality of the `BeanFactory`, it is
-generally recommended over the `BeanFactory`, except for a few situations such as in an
-`Applet` where memory consumption might be critical and a few extra kilobytes might make
-a difference. However, for most typical enterprise applications and systems, the
-`ApplicationContext` is what you will want to use. Spring makes __heavy__
-use of the <<beans-factory-extension-bpp, `BeanPostProcessor` extension point>> (to
-effect proxying and so on). If you use only a plain `BeanFactory`, a fair amount of
-support such as transactions and AOP will not take effect, at least not without some
-extra steps on your part. This situation could be confusing because nothing is actually
-wrong with the configuration.
+generally recommended over the `BeanFactory`, except for a few situations such as in
+embedded applications running on resource-constrained devices where memory consumption
+might be critical and a few extra kilobytes might make a difference. However, for
+most typical enterprise applications and systems, the `ApplicationContext` is what you
+will want to use. Spring makes __heavy__ use of the <<beans-factory-extension-bpp,
+`BeanPostProcessor` extension point>> (to effect proxying and so on). If you use only a
+plain `BeanFactory`, a fair amount of support such as transactions and AOP will not take
+effect, at least not without some extra steps on your part. This situation could be
+confusing because nothing is actually wrong with the configuration.
 
 The following table lists features provided by the `BeanFactory` and
 `ApplicationContext` interfaces and implementations.
@@ -9565,7 +9683,7 @@ a resource points to just one resource at a time.
 When the path location contains an Ant-style pattern, for example:
 
 [literal]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 /WEB-INF/*-context.xml
   com/mycompany/**/applicationContext.xml
@@ -9833,7 +9951,7 @@ Implementing a `Validator` is fairly straightforward, especially when you know o
 `ValidationUtils` helper class that the Spring Framework also provides.
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	public class PersonValidator implements Validator {
 
@@ -13510,16 +13628,16 @@ execution is in the trading module), and `tradingOperation` (which matches if a 
 execution represents any public method in the trading module).
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	@Pointcut("execution(public * *(..))")
-		private void anyPublicOperation() {}
+	private void anyPublicOperation() {}
 
-		@Pointcut("within(com.xyz.someapp.trading..*)")
-		private void inTrading() {}
+	@Pointcut("within(com.xyz.someapp.trading..*)")
+	private void inTrading() {}
 
-		@Pointcut("anyPublicOperation() && inTrading()")
-		private void tradingOperation() {}
+	@Pointcut("anyPublicOperation() && inTrading()")
+	private void tradingOperation() {}
 ----
 
 It is a best practice to build more complex pointcut expressions out of smaller named
@@ -13537,7 +13655,7 @@ defining a "SystemArchitecture" aspect that captures common pointcut expressions
 this purpose. A typical such aspect would look as follows:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	package com.xyz.someapp;
 
@@ -13654,7 +13772,7 @@ Some examples of common pointcut expressions are given below.
 * the execution of any public method:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	execution(public * *(..))
 ----
@@ -13662,7 +13780,7 @@ Some examples of common pointcut expressions are given below.
 * the execution of any method with a name beginning with "set":
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	execution(* set*(..))
 ----
@@ -13670,7 +13788,7 @@ Some examples of common pointcut expressions are given below.
 * the execution of any method defined by the `AccountService` interface:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	execution(* com.xyz.service.AccountService.*(..))
 ----
@@ -13678,7 +13796,7 @@ Some examples of common pointcut expressions are given below.
 * the execution of any method defined in the service package:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	execution(* com.xyz.service.*.*(..))
 ----
@@ -13686,7 +13804,7 @@ Some examples of common pointcut expressions are given below.
 * the execution of any method defined in the service package or a sub-package:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	execution(* com.xyz.service..*.*(..))
 ----
@@ -13905,7 +14023,7 @@ Before advice is declared in an aspect using the `@Before` annotation:
 If using an in-place pointcut expression we could rewrite the above example as:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	import org.aspectj.lang.annotation.Aspect;
 	import org.aspectj.lang.annotation.Before;
@@ -14234,7 +14352,7 @@ You can restrict interception of method types to certain parameter types by simp
 typing the advice parameter to the parameter type you want to intercept the method for:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	@Before("execution(* ..Sample+.sampleGenericMethod(*)) && args(param)")
 	public void beforeSampleMethod(MyType param) {
@@ -14247,7 +14365,7 @@ pointing out that this won't work for generic collections. So you cannot define 
 pointcut like this:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	@Before("execution(* ..Sample+.sampleGenericCollectionMethod(*)) && args(param)")
 	public void beforeSampleMethod(Collection<MyType> param) {
@@ -14655,7 +14773,7 @@ A pointcut representing the execution of any business service in the service lay
 be defined as follows:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<aop:config>
 
@@ -14687,7 +14805,7 @@ Assuming you have a `SystemArchitecture` aspect as described in <<aop-common-poi
 Declaring a pointcut inside an aspect is very similar to declaring a top-level pointcut:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<aop:config>
 
@@ -14708,7 +14826,7 @@ definition style may collect join point context. For example, the following poin
 collects the 'this' object as the join point context and passes it to advice:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<aop:config>
 
@@ -14742,7 +14860,7 @@ the keywords 'and', 'or' and 'not' can be used in place of '&&', '||' and '!'
 respectively. For example, the previous pointcut may be better written as:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<aop:config>
 
@@ -14795,7 +14913,7 @@ level. To define the pointcut inline instead, replace the `pointcut-ref` attribu
 a `pointcut` attribute:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<aop:aspect id="beforeExample" ref="aBean">
 
@@ -15205,7 +15323,7 @@ commonly see it used in conjunction with transactional advice, which also has it
 namespace support in Spring. Here's how it looks:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<aop:config>
 
@@ -15307,7 +15425,7 @@ annotations removed.
 The corresponding Spring configuration is:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<aop:config>
 
@@ -15349,7 +15467,7 @@ change to the aspect to retry only idempotent operations simply involves refinin
 pointcut expression so that only `@Idempotent` operations match:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<aop:pointcut id="idempotentOperation"
 			expression="execution(* com.xyz.myapp.service.*.*(..)) and
@@ -15416,22 +15534,22 @@ named pointcuts declared in XML. For example, in the @AspectJ style you can writ
 something like:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	@Pointcut(execution(* get*()))
-		public void propertyAccess() {}
+	public void propertyAccess() {}
 
-		@Pointcut(execution(org.xyz.Account+ *(..))
-		public void operationReturningAnAccount() {}
+	@Pointcut(execution(org.xyz.Account+ *(..))
+	public void operationReturningAnAccount() {}
 
-		@Pointcut(propertyAccess() && operationReturningAnAccount())
-		public void accountPropertyAccess() {}
+	@Pointcut(propertyAccess() && operationReturningAnAccount())
+	public void accountPropertyAccess() {}
 ----
 
 In the XML style I can declare the first two pointcuts:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<aop:pointcut id="propertyAccess"
 			expression="execution(* get*())"/>
@@ -16083,7 +16201,7 @@ Here is the profiling aspect. Nothing too fancy, just a quick-and-dirty time-bas
 profiler, using the @AspectJ-style of aspect declaration.
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	package foo;
 
@@ -16750,7 +16868,7 @@ effectively the union of these pointcuts.)
 The usage is shown below:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<bean id="settersAndAbsquatulatePointcut"
 			class="org.springframework.aop.support.JdkRegexpMethodPointcut">
@@ -16770,7 +16888,7 @@ Using `RegexpMethodPointcutAdvisor` simplifies wiring, as the one bean encapsula
 pointcut and advice, as shown below:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<bean id="settersAndAbsquatulateAdvisor"
 			class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
@@ -23202,7 +23320,7 @@ execute in the context of a transaction with read-write semantics. The following
 configuration is explained in detail in the next few paragraphs.
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<!-- from the file 'context.xml' -->
 	<?xml version="1.0" encoding="UTF-8"?>
@@ -23291,7 +23409,7 @@ do this is simply to change the pointcut expression to match any operation in yo
 service layer. For example:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<aop:config>
 		<aop:pointcut id="fooServiceMethods" expression="execution(* x.y.service.*.*(..))"/>
@@ -23468,7 +23586,7 @@ defined in that package (or in subpackages) and that have names ending in `Servi
 the default transactional configuration, you would write the following:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<beans xmlns="http://www.springframework.org/schema/beans"
@@ -23516,7 +23634,7 @@ The following example shows how to configure two distinct beans with totally dif
 transactional settings.
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<beans xmlns="http://www.springframework.org/schema/beans"
@@ -24130,7 +24248,7 @@ is controlled through the `Ordered` interface. For full details on advice orderi
 ----
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<beans xmlns="http://www.springframework.org/schema/beans"
@@ -24186,7 +24304,7 @@ The following example effects the same setup as above, but uses the purely XML
 declarative approach.
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<beans xmlns="http://www.springframework.org/schema/beans"
@@ -26654,7 +26772,7 @@ where it's simply called `execute`. However, you don't have to subclass the `Sql
 class since it can easily be parameterized by setting SQL and declaring parameters.
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	import java.sql.Types;
 
@@ -27727,7 +27845,7 @@ The following example shows how you can configure an AOP transaction interceptor
 XML, for a simple service class:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<beans xmlns="http://www.springframework.org/schema/beans"
@@ -27949,7 +28067,7 @@ across any number of DAOs and any number of session factories without special re
 long as it is using `JtaTransactionManager` as the strategy.
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<beans>
 
@@ -28368,7 +28486,7 @@ To execute service operations within transactions, you can use Spring's common
 declarative transaction facilities. For example:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<beans xmlns="http://www.springframework.org/schema/beans"
@@ -28682,7 +28800,7 @@ parsed and later retrieved through the persistence unit name. (By default, the c
 is searched for `META-INF/persistence.xml` files.)
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<bean id="pum" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
 		<property name="persistenceXmlLocations">
@@ -28868,7 +28986,7 @@ To execute service operations within transactions, you can use Spring's common
 declarative transaction facilities. For example:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<beans xmlns="http://www.springframework.org/schema/beans"
@@ -29008,7 +29126,7 @@ Spring abstracts all marshalling operations behind the
 below.
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	public interface Marshaller {
 
@@ -29056,7 +29174,7 @@ Similar to the `Marshaller`, there is the `org.springframework.oxm.Unmarshaller`
 interface.
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	public interface Unmarshaller {
 
@@ -30819,25 +30937,27 @@ multiple requests are allowed to access a session concurrently.
 ====
 
 * `org.springframework.web.context.request.WebRequest` or
-  `org.springframework.web.context.request.NativeWebRequest`. Allows for generic request
-  parameter access as well as request/session attribute access, without ties to the
-  native Servlet/Portlet API.
+  `org.springframework.web.context.request.NativeWebRequest`. Allows for generic
+  request parameter access as well as request/session attribute access, without ties
+  to the native Servlet/Portlet API.
 * `java.util.Locale` for the current request locale, determined by the most specific
-  locale resolver available, in effect, the configured `LocaleResolver` in a Servlet
-  environment.
-* `java.io.InputStream` / `java.io.Reader` for access to the request's content. This
-  value is the raw InputStream/Reader as exposed by the Servlet API.
-* `java.io.OutputStream` / `java.io.Writer` for generating the response's content. This
-  value is the raw OutputStream/Writer as exposed by the Servlet API.
+  locale resolver available, in effect, the configured `LocaleResolver` /
+  `LocaleContextResolver` in an MVC environment.
+* `java.util.TimeZone` (Java 6+) / `java.time.ZoneId` (on Java 8) for the time zone
+  associated with the current request, as determined by a `LocaleContextResolver`.
+* `java.io.InputStream` / `java.io.Reader` for access to the request's content.
+  This value is the raw InputStream/Reader as exposed by the Servlet API.
+* `java.io.OutputStream` / `java.io.Writer` for generating the response's content.
+  This value is the raw OutputStream/Writer as exposed by the Servlet API.
 * `org.springframework.http.HttpMethod` for the HTTP request method.
 * `java.security.Principal` containing the currently authenticated user.
 * `@PathVariable` annotated parameters for access to URI template variables. See
   <<mvc-ann-requestmapping-uri-templates>>.
-* `@MatrixVariable` annotated parameters for access to name-value pairs located in URI
-  path segments. See <<mvc-ann-matrix-variables>>.
+* `@MatrixVariable` annotated parameters for access to name-value pairs located in
+  URI path segments. See <<mvc-ann-matrix-variables>>.
 * `@RequestParam` annotated parameters for access to specific Servlet request
-  parameters. Parameter values are converted to the declared method argument type. See
-  <<mvc-ann-requestparam>>.
+  parameters. Parameter values are converted to the declared method argument type.
+  See <<mvc-ann-requestparam>>.
 * `@RequestHeader` annotated parameters for access to specific Servlet request HTTP
   headers. Parameter values are converted to the declared method argument type.
   See <<mvc-ann-requestheader>>.
@@ -30857,8 +30977,8 @@ multiple requests are allowed to access a session concurrently.
   (attributes stored temporarily on the server-side to make them available to the
   request after the redirect). `RedirectAttributes` is used instead of the implicit
   model if the method returns a "redirect:" prefixed view name or `RedirectView`.
-* Command or form objects to bind request parameters to bean properties (via setters) or
-  directly to fields, with customizable type conversion, depending on `@InitBinder`
+* Command or form objects to bind request parameters to bean properties (via setters)
+  or directly to fields, with customizable type conversion, depending on `@InitBinder`
   methods and/or the HandlerAdapter configuration. See the `webBindingInitializer`
   property on `RequestMappingHandlerAdapter`. Such command objects along with their
   validation results will be exposed as model attributes by default, using the command
@@ -32463,7 +32583,7 @@ One issue with the `Accept` header is that it is impossible to set it in a web b
 within HTML. For example, in Firefox, it is fixed to:
 
 [literal]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
 ----
@@ -32906,7 +33026,7 @@ a request for the following URL, `http://www.sf.net/home.view?siteLanguage=nl` w
 change the site language to Dutch.
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<bean id="localeChangeInterceptor"
 			class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
@@ -34040,7 +34160,7 @@ incoming requests or restricted to specific URL path patterns.
 An example of registering interceptors in Java:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	@Configuration
 	@EnableWebMvc
@@ -34059,7 +34179,7 @@ An example of registering interceptors in Java:
 And in XML use the `<mvc:interceptors>` element:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<mvc:interceptors>
 		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
@@ -34290,7 +34410,7 @@ to serve resource requests with a URL pattern of `/resources/**` from a
 `public-resources` directory within the web application root you would use:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	@Configuration
 	@EnableWebMvc
@@ -34307,7 +34427,7 @@ to serve resource requests with a URL pattern of `/resources/**` from a
 And the same in XML:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<mvc:resources mapping="/resources/**" location="/public-resources/"/>
 ----
@@ -34316,7 +34436,7 @@ To serve these resources with a 1-year future expiration to ensure maximum use o
 browser cache and a reduction in HTTP requests made by the browser:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	@Configuration
 	@EnableWebMvc
@@ -34333,7 +34453,7 @@ browser cache and a reduction in HTTP requests made by the browser:
 And in XML:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<mvc:resources mapping="/resources/**" location="/public-resources/" cache-period="31556926"/>
 ----
@@ -34347,7 +34467,7 @@ serving of resources from both the web application root and from a known path of
 `/META-INF/public-web-resources/` in any jar on the classpath use:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	@EnableWebMvc
 	@Configuration
@@ -34393,7 +34513,7 @@ caching should be enabled in production.
 Java config example;
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	@Configuration
 	@EnableWebMvc
@@ -34413,7 +34533,7 @@ Java config example;
 XML example:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 <mvc:resources mapping="/resources/**" location="/public-resources/">
 	<mvc:resource-chain>
@@ -38921,7 +39041,7 @@ framework-specific, or a standard messaging protocol.
 Spring Framework provides support for using
 http://stomp.github.io/stomp-specification-1.2.html#Abstract[STOMP] -- a simple, messaging protocol
 originally created for use in scripting languages with frames inspired
-by HTTP. STOMP is widely support and well suited for use over
+by HTTP. STOMP is widely supported and well suited for use over
 WebSocket and over the web.
 
 
@@ -38972,9 +39092,9 @@ WebSocket clients or to a specific user.
 [[websocket-server]]
 === WebSocket API
 The Spring Framework provides a WebSocket API designed to adapt to various WebSocket engines.
-For example, it runs on JSR-356 runtimes such as Tomcat (7.0.47+), GlassFish (4.0+) and
-WildFly (8.0+) but can also adapt to other WebSocket runtimes such as the Jetty (9.1+)
-native WebSocket support.
+Currently the list includes WebSocket runtimes such as Tomcat 7.0.47+, Jetty 9.1+,
+GlassFish 4.1+, WebLogic 12.1.3+, and Undertow 1.0+ (and WildFly 8.0+). Additional support
+may be added as more WebSocket runtimes become available.
 
 [NOTE]
 ====
@@ -39161,9 +39281,7 @@ requests -- such as Spring MVC's `DispatcherServlet`.
 
 This is a significant limitation of JSR-356 that Spring's WebSocket support
 addresses by providing a server-specific `RequestUpgradeStrategy` even when
-running in a JSR-356 runtime. At present such support is available on
-Tomcat 7.0.47+, Jetty 9.1+, GlassFish 4.0+, and WildFly 8.0+. Additional support will be
-added as more WebSocket runtimes become available.
+running in a JSR-356 runtime.
 
 [NOTE]
 ====
@@ -39353,7 +39471,8 @@ or WebSocket XML namespace:
 As explained in the <<websocket-into-fallback-options,introduction>>, WebSocket is not
 supported in all browsers yet and may be precluded by restrictive network proxies.
 This is why Spring provides fallback options that emulate the WebSocket API as close
-as possible based on the https://github.com/sockjs/sockjs-protocol[SockJS protocol].
+as possible based on the https://github.com/sockjs/sockjs-protocol[SockJS protocol]
+(version 0.3.3).
 
 [[websocket-fallback-sockjs-overview]]
 ==== Overview of SockJS
@@ -39367,14 +39486,14 @@ SockJS consists of:
 * The https://github.com/sockjs/sockjs-protocol[SockJS protocol]
 defined in the form of executable
 http://sockjs.github.io/sockjs-protocol/sockjs-protocol-0.3.3.html[narrated tests].
-* The https://github.com/sockjs/sockjs-client[SockJS JavaScript client] - a client library for use in browsers.
+* The https://github.com/sockjs/sockjs-client/tree/v0.3.4[SockJS JavaScript client] - a client library for use in browsers.
 * SockJS server implementations including one in the Spring Framework `spring-websocket` module.
 * As of 4.1 `spring-websocket` also provides a SockJS Java client.
 
 SockJS is designed for use in browsers. It goes to great lengths
 to support a wide range of browser versions using a variety of techniques.
 For the full list of SockJS transport types and browsers see the
-https://github.com/sockjs/sockjs-client[SockJS client] page. Transports
+https://github.com/sockjs/sockjs-client/tree/v0.3.4[SockJS client] page. Transports
 fall in 3 general categories: WebSocket, HTTP Streaming, and HTTP Long Polling.
 For an overview of these categories see
 https://spring.io/blog/2012/05/08/spring-mvc-3-2-preview-techniques-for-real-time-updates/[this blog post].
@@ -39471,10 +39590,10 @@ integrate into other HTTP serving environments with the help of
 {javadoc-baseurl}/org/springframework/web/socket/sockjs/support/SockJsHttpRequestHandler.html[SockJsHttpRequestHandler].
 
 On the browser side, applications can use the
-https://github.com/sockjs/sockjs-client[sockjs-client] that emulates the W3C
-WebSocket API and communicates with the server to select the best
+https://github.com/sockjs/sockjs-client/tree/v0.3.4[sockjs-client] (version 0.3.x) that
+emulates the W3C WebSocket API and communicates with the server to select the best
 transport option depending on the browser it's running in. Review the
-https://github.com/sockjs/sockjs-client[sockjs-client] page and the list of
+https://github.com/sockjs/sockjs-client/tree/v0.3.4[sockjs-client] page and the list of
 transport types supported by browser. The client also provides several
 configuration options, for example, to specify which transports to include.
 
@@ -39556,7 +39675,7 @@ similar option on the `<websocket:sockjs>` element:
 During initial development, do enable the SockJS client `devel` mode that prevents
 the browser from caching SockJS requests (like the iframe) that would otherwise
 be cached. For details on how to enable it see the
-https://github.com/sockjs/sockjs-client[SockJS client] page.
+https://github.com/sockjs/sockjs-client/tree/v0.3.4[SockJS client] page.
 ====
 
 [[websocket-fallback-sockjs-heartbeat]]
@@ -47274,7 +47393,7 @@ example the following task is being scheduled to run 15 minutes past each hour b
 during the 9-to-5 "business hours" on weekdays.
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	scheduler.schedule(task, new CronTrigger("* 15 9-17 * * MON-FRI"));
 ----
@@ -47401,7 +47520,7 @@ If simple periodic scheduling is not expressive enough, then a cron expression m
 provided. For example, the following will only execute on weekdays.
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	@Scheduled(cron="*/5 * * * * MON-FRI")
 	public void doSomething() {
@@ -47708,7 +47827,7 @@ before the first execution of the method. For more control, a "cron" attribute m
 provided instead. Here is an example demonstrating these other options.
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<task:scheduled-tasks scheduler="myScheduler">
 		<task:scheduled ref="beanA" method="methodA" fixed-delay="5000" initial-delay="1000"/>
@@ -47758,7 +47877,7 @@ case, if the `ExampleJob` contains a bean property named `timeout`, the `JobDeta
 will have it applied automatically:
 
 [source,java,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	package example;
 
@@ -47875,7 +47994,7 @@ those triggers.
 Find below a couple of examples:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
 		<!-- see the example of method invoking job above -->
@@ -48956,13 +49075,6 @@ this chapter.
 * The http://groovy.codehaus.org/[Groovy] homepage
 * The http://www.beanshell.org/[BeanShell] homepage
 
-Some of the more active members of the Spring community have also added support for a
-number of additional dynamic languages above and beyond the ones covered in this
-chapter. While it is possible that such third party contributions may be added to the
-list of languages supported by the main Spring distribution, your best bet for seeing if
-your favorite scripting language is supported is the
-https://springmodules.dev.java.net/[Spring Modules project].
-
 
 
 
@@ -49519,6 +49631,13 @@ options to be specified that influence the way the caching behavior is added to 
 application through AOP. The configuration is intentionally similar with that of
 <<tx-annotation-driven-settings, `@Transactional`>>:
 
+[NOTE]
+====
+Advanced customizations using Java config require to implement `CachingConfigurer`, refer
+to {javadoc-baseurl}/org/springframework/cache/annotation/CachingConfigurer.html[the
+javadoc for more details].
+====
+
 [[cache-annotation-driven-settings]]
 .Cache annotation settings
 [cols="1,1,1,3"]
@@ -49818,7 +49937,7 @@ declarative transaction management <<transaction-declarative-first-example,advic
 The previous example can be translated into:
 
 [source,xml,indent=0]
-[subs="verbatim,quotes"]
+[subs="verbatim"]
 ----
 	<!-- the service we want to make cacheable -->
 	<bean id="bookService" class="x.y.service.DefaultBookService"/>
